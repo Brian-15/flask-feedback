@@ -1,4 +1,4 @@
-from models import User
+from models import User, Feedback
 from app import app, db
 
 db.drop_all()
@@ -28,4 +28,25 @@ user3 = User.register({
 })
 
 db.session.add_all([user1, user2, user3])
+db.session.commit()
+
+feedback1_1 = Feedback(
+    title="Feedback1",
+    content="This is an example feedback",
+    username="test_user1"
+)
+
+feedback2_1 = Feedback(
+    title="Feedback2",
+    content="This is an example feedback",
+    username="test_user1"
+)
+
+feedback3_2 = Feedback(
+    title="Feedback3",
+    content="This is an example feedback",
+    username="test_user2"
+)
+
+db.session.add_all([feedback1_1, feedback2_1, feedback3_2])
 db.session.commit()

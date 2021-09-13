@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import HTTPException
-from models import db, connect_db, add_and_commit, User
+from models import db, connect_db, add_and_commit, User, Feedback
 from forms import UserRegistrationForm, UserLoginForm
 
 app = Flask(__name__)
@@ -31,7 +31,8 @@ def user(username):
 
     if session.get("username", False):
         user = User.query.filter_by(username=username).first()
-        return render_template("user.html", title=f"{username}'s Profile", user=user)
+        feedbacks = Feedback.query.filter_by(username=username).all()
+        return render_template("user.html", title=f"{username}'s Profile", user=user, feedbacks=feedbacks)
     else:
         flash("You must be logged in to view user profiles.", "danger")
         return redirect("/login")

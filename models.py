@@ -91,3 +91,5 @@ class Feedback(db.Model):
 
     username = db.Column(db.String(20),
                          db.ForeignKey("users.username"))
+    
+    

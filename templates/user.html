@@ -3,6 +3,12 @@
 <div class="text-center">
     <p class="display-6">{{ user.get_full_name() }}</p>
     <p class="display-6">{{ user.email }}</p>
-    <a class="btn btn-danger" href="/logout">Log Out</a>
+    
+    <a class="btn btn-danger mb-5" href="/logout">Log Out</a>
+
+    {% for feedback in feedbacks %}
+    <h2 class="display-8">{{ feedback.title }}</h2>
+    <p>{{ feedback.content }}</p>
+    {% endfor %}
 </div>
 {% endblock %}
