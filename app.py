@@ -15,12 +15,17 @@ db.create_all()
 @app.route("/")
 def home():
     """Redirect to register route"""
+    session.clear()
     return redirect("/register")
 
 @app.route("/secret")
 def secret():
 
-    return render_template("secret.html", title="Secret")
+    if session.get("username", False):
+        return render_template("secret.html", title="Secret")
+    else:
+        flash("You do not have permission to view this.", "danger")
+        return redirect("/login")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
