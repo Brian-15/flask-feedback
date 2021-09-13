@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, flash, session
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.exceptions import HTTPException
 from models import db, connect_db, add_and_commit, User
 from forms import UserRegistrationForm, UserLoginForm
 
@@ -12,24 +13,34 @@ app.config["SQLALCHEMY_ECHO"] = True
 connect_db(app)
 db.create_all()
 
+def check_user():
+    """Redirects to user profile if user is logged in"""
+    username = session.get("username", False)
+
+    if username:
+        return redirect(f"/users/{username}")
+
 @app.route("/")
 def home():
     """Redirect to register route"""
-    session.clear()
     return redirect("/register")
 
-@app.route("/secret")
-def secret():
+@app.route("/users/<username>", methods=["GET"])
+def user(username):
+    """Display user profile"""
 
     if session.get("username", False):
-        return render_template("secret.html", title="Secret")
+        user = User.query.filter_by(username=username).first()
+        return render_template("user.html", title=f"{username}'s Profile", user=user)
     else:
-        flash("You do not have permission to view this.", "danger")
+        flash("You must be logged in to view user profiles.", "danger")
         return redirect("/login")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Display register form, send registration data upon validation"""
+    
+    check_user()
 
     form = UserRegistrationForm()
 
@@ -40,7 +51,7 @@ def register():
         
         add_and_commit(user)
 
-        return redirect("/secret")
+        return redirect("/login")
 
     else:
         # GET route
@@ -53,6 +64,8 @@ def register():
 def login():
     """Display login form, send login credentials upon form validation"""
 
+    check_user()
+    
     form = UserLoginForm()
 
     if form.validate_on_submit():
@@ -66,7 +79,7 @@ def login():
         if user:
             session["username"] = username
             flash(f"Successfully logged in as {username}", "success")
-            return redirect("/secret")
+            return redirect(f"/users/{username}")
         
         else:
             flash("Failed to login.", "danger")
@@ -78,3 +91,18 @@ def login():
                                title="Login",
                                post_url="/login",
                                form=form)
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    """Clears user information from the session, redirect to home"""
+
+    session.clear()
+    return redirect("/")
+
+@app.errorhandler(HTTPException)
+def handle_exception(e):
+
+    if isinstance(e, HTTPException):
+        return render_template("error.html", title=f"Error: {e.name}", err=e)
+    else:
+        return render_template("error.html", title=f"Error: {e.name}"), 500

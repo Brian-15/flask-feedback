@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="text-center">
+    <p class="display-6">{{ user.get_full_name() }}</p>
+    <p class="display-6">{{ user.email }}</p>
+</div>
+    {% endblock %}
