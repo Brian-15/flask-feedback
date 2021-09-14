@@ -74,6 +74,16 @@ class User(db.Model):
         
         else:
             return False
+    
+    @classmethod
+    def delete(cls, username):
+        """Remove user of username and all their feedback"""
+
+        Feedback.delete_from_user(username)
+        cls.query.filter_by(username=username).delete()
+        db.session.commit()
+
+        
 
 class Feedback(db.Model):
 
@@ -92,4 +102,19 @@ class Feedback(db.Model):
     username = db.Column(db.String(20),
                          db.ForeignKey("users.username"))
     
+    @classmethod
+    def delete(cls, id):
+        """Removes feedback of id"""
+        
+        cls.query.filter_by(id=id).delete()
+        db.session.commit()
+
+    @classmethod
+    def delete_from_user(cls, username):
+        """Removes all feedback authored by user of username"""
+
+        cls.query.filter_by(username=username).delete()
+        db.session.commit()
+        
+
     

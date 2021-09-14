@@ -8,12 +8,18 @@
     <title>{{title}}</title>
 </head>
 <body>
-    <div class="container">
-        <h1 class="display-1 text-center">{{ title }}</h1>
+    <div class="container text-center">
         {% for category, msg in get_flashed_messages(with_categories=True) %}
         <div class="alert alert-{{category}}">{{ msg }}</div>
         {% endfor %}
+        <h1 class="display-1 text-center">{{ title }}</h1>
         {% block content %}{% endblock %}
+        
+        {% if session.get("username", False) %}
+        <div>
+            <a class="btn btn-danger mt-5" href="/logout">Log Out</a>
+        </div>
+        {% endif %}
     </div>
 </body>
 </html>

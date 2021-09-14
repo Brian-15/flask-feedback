@@ -4,11 +4,32 @@
     <p class="display-6">{{ user.get_full_name() }}</p>
     <p class="display-6">{{ user.email }}</p>
     
-    <a class="btn btn-danger mb-5" href="/logout">Log Out</a>
+    {% if username == user.username %}
+    <form action="/users/{{username}}/delete" method="POST">
+        <button class="btn btn-danger" type="submit">Delete User</button>
+    </form>
+    {% endif %}
 
+    <h2 class="display-7">Feedback</h2>
+    {% if username == user.username %}
+    <a class="btn btn-primary" href="/users/{{user.username}}/feedback/add">Add Feedback</a>
+    {% endif %}
+    {% if feedbacks %}
     {% for feedback in feedbacks %}
-    <h2 class="display-8">{{ feedback.title }}</h2>
-    <p>{{ feedback.content }}</p>
+    <div>
+        <h3 class="display-8">{{ feedback.title }}</h3>
+        <p>{{ feedback.content }}</p>
+        {% if username == user.username %}
+        <a class="btn btn-primary" href="/feedback/{{feedback.id}}/update">Edit</a>
+        <form action="/feedback/{{feedback.id}}/delete" method="POST">
+            <button class="btn btn-danger" type="submit">Delete</button>
+        </form>
+        {% endif %}
+    </div>
     {% endfor %}
+    {% else %}
+    <p>This user has no feedback to display</p>
+    {% endif %}
+    
 </div>
 {% endblock %}
